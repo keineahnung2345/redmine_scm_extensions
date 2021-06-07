@@ -21,9 +21,9 @@ class ScmExtensionsController < ApplicationController
   unloadable
 
   layout 'base'
-  before_filter :find_project, :except => [:show, :download]
-  before_filter :find_repository, :only => [:show, :download]
-  before_filter :authorize, :except => [:show, :download]
+  before_action :find_project, :except => [:show, :download]
+  before_action :find_repository, :only => [:show, :download]
+  before_action :authorize, :except => [:show, :download]
 
   helper :attachments
   include AttachmentsHelper
@@ -113,10 +113,12 @@ class ScmExtensionsController < ApplicationController
           flash[:error] = l(:error_scm_extensions_mkdir_failed)
         end
       end
+      path = path.to_s.split(%r{[/\\]}).select {|p| !p.blank?}
+      path = nil if path == []
       if @repository.identifier.blank?
-        redirect_to :controller => 'repositories', :action => 'show', :id => @project, :path => path.to_s.split(%r{[/\\]}).select {|p| !p.blank?}
+        redirect_to :controller => 'repositories', :action => 'show', :id => @project, :path => path
       else
-        redirect_to :controller => 'repositories', :action => 'show', :id => @project, :repository_id => @repository.identifier, :path => path.to_s.split(%r{[/\\]}).select {|p| !p.blank?}
+        redirect_to :controller => 'repositories', :action => 'show', :id => @project, :repository_id => @repository.identifier, :path => path
       end
       return
     end
