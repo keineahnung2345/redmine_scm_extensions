@@ -78,16 +78,18 @@ class ScmExtensionsController < ApplicationController
       case ret
       when 0
         parent = File.dirname(svnpath).sub(/^\//,'')
+        parent = "" if parent == "."
         flash[:notice] = l(:notice_scm_extensions_delete_success)
       when 1
         flash[:error] = l(:error_scm_extensions_delete_failed)
       end
     end
-
+    path = parent.to_s.split(%r{[/\\]}).select {|p| !p.blank?}
+    path = nil if path == []
     if @repository.identifier.blank?
-      redirect_to :controller => 'repositories', :action => 'show', :id => @project, :path => parent.to_s.split(%r{[/\\]}).select {|p| !p.blank?}
+      redirect_to :controller => 'repositories', :action => 'show', :id => @project, :path => path
     else
-      redirect_to :controller => 'repositories', :action => 'show', :id => @project, :repository_id => @repository.identifier, :path => parent.to_s.split(%r{[/\\]}).select {|p| !p.blank?}
+      redirect_to :controller => 'repositories', :action => 'show', :id => @project, :repository_id => @repository.identifier, :path => path
     end
     return
   end
