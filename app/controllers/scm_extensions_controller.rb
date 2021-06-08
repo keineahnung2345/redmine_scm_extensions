@@ -169,7 +169,9 @@ class ScmExtensionsController < ApplicationController
     #need @entries, @rev, @project
     spath = ""
     spath = params[:path] if (params[:path] && !params[:path].empty?)
-    @entries = @repository.entries(spath, @rev)
+    @entry = @repository.entry(spath, @rev)
+    isdir = (@entry.kind == "dir")
+    @entries = isdir ? @repository.entries(spath,@rev) : [@entry]
 
     if !request.get? && !request.xhr?
       @scm_extensions.path = params[:scm_extensions][:path]
@@ -177,23 +179,27 @@ class ScmExtensionsController < ApplicationController
       @scm_extensions.recipients = params[:watchers]
       reg = Regexp.new("^#{path_root}")
       path = params[:scm_extensions][:path].sub(reg,'').sub(/^\//,'')
+      @entry = @repository.entry(path, @rev)
+      isdir = (@entry.kind == "dir")
+      @entries = isdir ? @repository.entries(path,@rev) : [@entry]
       attached = []
       svnpath = path.empty? ? "/" : path
       selectedfiles = []
       if params[:selectedfiles]
         reg2 = Regexp.new("^#{path}")
         params[:selectedfiles].each do |entrypath|
-          selectedfiles << entrypath.sub(reg2,'').sub(/^\//,'')
+          selectedfiles << (isdir ? entrypath.sub(reg2,'').sub(/^\//,'') : File.basename(entrypath))
         end
       end
 
       @scm_extensions.notify(selectedfiles) 
       flash[:notice] = l(:notice_scm_extensions_email_success) if @scm_extensions.recipients
+      action = (isdir ? 'show' : 'entry')
       path = format_path(path)
       if @repository.identifier.blank?
-        redirect_to :controller => 'repositories', :action => 'show', :id => @project, :path => path
+        redirect_to :controller => 'repositories', :action => action, :id => @project, :path => path
       else
-        redirect_to :controller => 'repositories', :action => 'show', :id => @project, :repository_id => @repository.identifier, :path => path
+        redirect_to :controller => 'repositories', :action => action, :id => @project, :repository_id => @repository.identifier, :path => path
       end
       return
     end
