@@ -42,9 +42,8 @@ class ScmExtensionsController < ApplicationController
       reg = Regexp.new("^#{path_root}")
       path = params[:scm_extensions][:path].sub(reg,'').sub(/^\//,'')
       attached = []
-      if params[:attachments] && params[:attachments].is_a?(Hash)
+      if params[:attachments] && params[:attachments].is_a?(ActionController::Parameters)
         svnpath = path.empty? ? "/" : path
-
         if @repository.scm.respond_to?('scm_extensions_upload')
           ret = @repository.scm.scm_extensions_upload(@repository, svnpath, params[:attachments], params[:scm_extensions][:comments], nil)
           case ret
@@ -59,10 +58,11 @@ class ScmExtensionsController < ApplicationController
         end
 
       end
+      path = format_path(path)
       if @repository.identifier.blank?
-        redirect_to :controller => 'repositories', :action => 'show', :id => @project, :path => path.to_s.split(%r{[/\\]}).select {|p| !p.blank?}
+        redirect_to :controller => 'repositories', :action => 'show', :id => @project, :path => path
       else
-        redirect_to :controller => 'repositories', :action => 'show', :id => @project, :repository_id => @repository.identifier, :path => path.to_s.split(%r{[/\\]}).select {|p| !p.blank?}
+        redirect_to :controller => 'repositories', :action => 'show', :id => @project, :repository_id => @repository.identifier, :path => path
       end
       return
     end
@@ -84,8 +84,7 @@ class ScmExtensionsController < ApplicationController
         flash[:error] = l(:error_scm_extensions_delete_failed)
       end
     end
-    path = parent.to_s.split(%r{[/\\]}).select {|p| !p.blank?}
-    path = nil if path == []
+    path = format_path(parent)
     if @repository.identifier.blank?
       redirect_to :controller => 'repositories', :action => 'show', :id => @project, :path => path
     else
@@ -115,8 +114,7 @@ class ScmExtensionsController < ApplicationController
           flash[:error] = l(:error_scm_extensions_mkdir_failed)
         end
       end
-      path = path.to_s.split(%r{[/\\]}).select {|p| !p.blank?}
-      path = nil if path == []
+      path = format_path(path)
       if @repository.identifier.blank?
         redirect_to :controller => 'repositories', :action => 'show', :id => @project, :path => path
       else
@@ -191,11 +189,11 @@ class ScmExtensionsController < ApplicationController
 
       @scm_extensions.notify(selectedfiles) 
       flash[:notice] = l(:notice_scm_extensions_email_success) if @scm_extensions.recipients
-
+      path = format_path(path)
       if @repository.identifier.blank?
-        redirect_to :controller => 'repositories', :action => 'show', :id => @project, :path => path.to_s.split(%r{[/\\]}).select {|p| !p.blank?}
+        redirect_to :controller => 'repositories', :action => 'show', :id => @project, :path => path
       else
-        redirect_to :controller => 'repositories', :action => 'show', :id => @project, :repository_id => @repository.identifier, :path => path.to_s.split(%r{[/\\]}).select {|p| !p.blank?}
+        redirect_to :controller => 'repositories', :action => 'show', :id => @project, :repository_id => @repository.identifier, :path => path
       end
       return
     end
@@ -274,6 +272,12 @@ class ScmExtensionsController < ApplicationController
     else
       "'" + str.gsub(/'/, "'\"'\"'") + "'"
     end
+  end
+
+  def format_path(path)
+    path = path.to_s.split(%r{[/\\]}).select {|p| !p.blank?}
+    path = nil if path == []
+    path
   end
 
 end

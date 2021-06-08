@@ -29,7 +29,7 @@ end
 module FilesystemAdapterMethodsScmExtensions
 
   def scm_extensions_upload(repository, folder_path, attachments, comments, identifier)
-    return -1 if attachments.nil? || !attachments.is_a?(Hash)
+    return -1 if attachments.nil? || !attachments.is_a?(ActionController::Parameters)
     return -1 if scm_extensions_invalid_path(folder_path)
     metapath = (self.url =~ /\/files\/$/ && File.exist?(self.url.sub(/\/files\//, "/attributes")))
 
@@ -49,13 +49,12 @@ module FilesystemAdapterMethodsScmExtensions
                                                  :comments => comments)
       
       end
-      attachments.each_value do |attachment|
-        ajaxuploaded = attachment.has_key?("token")
+      attachments.require(attachments.keys).each do |attachment|
+        ajaxuploaded = true #attachment.has_key?("authenticity_token")
 
         if ajaxuploaded
           filename = attachment['filename']
-          token = attachment['token']
-          tmp_att = Attachment.find_by_token(token)
+          tmp_att = Attachment.find_by(filename: filename)
           file = tmp_att.diskfile
         else
           file = attachment['file']
