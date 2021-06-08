@@ -55,7 +55,7 @@ class ScmExtensionsWrite
         end
       end
       recipientsWithLang.each do |language,rec|
-        ScmExtensionsMailer.notify(self, selectedfiles, language, rec).deliver
+        ScmExtensionsMailer.notify(User.current, self, selectedfiles, language, rec).deliver
       end
     end
     return true
