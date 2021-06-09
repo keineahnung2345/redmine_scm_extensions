@@ -185,7 +185,10 @@ class ScmExtensionsController < ApplicationController
       attached = []
       svnpath = path.empty? ? "/" : path
       selectedfiles = []
-      if params[:selectedfiles]
+      if !isdir
+        # if the notify button on file's page is clicked, there is no need to select files
+        selectedfiles = [File.basename(path)]
+      elsif params[:selectedfiles]
         reg2 = Regexp.new("^#{path}")
         params[:selectedfiles].each do |entrypath|
           selectedfiles << (isdir ? entrypath.sub(reg2,'').sub(/^\//,'') : File.basename(entrypath))
