@@ -1,5 +1,5 @@
 # Traditional Chinese strings go
-zh:
+zh-TW:
   project_module_scm_extensions: "SCM擴充功能"
   permission_scm_write_access: "更新儲存機制"
   label_scm_extensions_upload: "上傳檔案"
