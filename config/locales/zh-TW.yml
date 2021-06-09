@@ -1,0 +1,26 @@
+# Traditional Chinese strings go
+zh:
+  project_module_scm_extensions: "SCM擴充功能"
+  permission_scm_write_access: "更新儲存機制"
+  label_scm_extensions_upload: "上傳檔案"
+  notice_scm_extensions_upload_success: "上傳成功。"
+  error_scm_extensions_upload_failed: "系統錯誤。取消更新。"
+  error_scm_extensions_no_path_head: "路徑在儲存機制的當前修訂版本中不存在。"
+  error_scm_extensions_delete_failed: "系統錯誤。取消刪除。"
+  notice_scm_extensions_delete_success: "刪除成功。"
+  notice_scm_extensions_mkdir_success: "資料夾已創建。"
+  error_scm_extensions_mkdir_failed: "系統錯誤。資料夾無法創建。"
+  label_scm_extensions_new_folder: "新建資料夾"
+  label_scm_extensions_delete_folder: "刪除資料夾"
+  label_scm_extensions_delete_file: "刪除檔案"
+  label_scm_extensions_folder_name: "資料夾名稱"
+
+  label_scm_extensions_upload_subject: "%{value}: 上傳檔案可用。"
+  label_scm_extensions_upload_body: "以下檔案已上傳至對應資料夾。"
+  label_scm_extensions_notify: Notify (email)  
+  label_scm_select_files: select files and folders that will be referenced in email
+  field_scm_mail_recipients: recipients
+  notice_scm_extensions_email_success: Notification done
+  button_send_notification: Send notification
+  label_scm_extensions_notify_body:  "Following files can be found in folder "
+  label_scm_extensions_notify_by: "Mail from %{author}"
