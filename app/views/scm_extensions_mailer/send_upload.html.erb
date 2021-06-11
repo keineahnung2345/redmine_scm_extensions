@@ -18,9 +18,9 @@ end
   %>
 
 <ul>
-<% @attachments.each_value do |attachment|
+<% @attachments.require(@attachments.keys).each do |attachment|
 filename = nil?
-if attachment.has_key?("token")
+if attachment.has_key?("filename")
   filename = attachment['filename']
 else
   file = attachment['file']

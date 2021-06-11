@@ -33,7 +33,7 @@ class ScmExtensionsWrite
         end
       end
       recipientsWithLang.each do |language,rec|
-        ScmExtensionsMailer.send_upload(self, attachments, language, rec).deliver
+        ScmExtensionsMailer.send_upload(User.current, self, attachments, language, rec).deliver
       end
     end
     return true
