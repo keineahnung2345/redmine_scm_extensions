@@ -28,7 +28,7 @@ module SCMExtensionsZip
     attr_reader :files
 
     def initialize
-      @temp_file = Tempfile.new(%w(dmsf_zip_ .zip), RemoteFoldersHelper.temp_dir)
+      @temp_file = Tempfile.new(%w(scm_extensions_zip_ .zip), Pathname.new(Dir.tmpdir))
       @zip_file = ::Zip::OutputStream.open(@temp_file)
     end
 
