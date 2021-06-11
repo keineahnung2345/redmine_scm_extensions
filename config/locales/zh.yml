@@ -24,3 +24,4 @@ zh:
   button_send_notification: Send notification
   label_scm_extensions_notify_body:  "Following files can be found in folder "
   label_scm_extensions_notify_by: "Mail from %{author}"
+  label_scm_extensions_download: "下载"

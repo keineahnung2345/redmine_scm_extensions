@@ -27,6 +27,7 @@ class ScmExtensionsController < ApplicationController
 
   helper :attachments
   include AttachmentsHelper
+  include SCMExtensionsZip
 
   def upload
     path_root = @repository.identifier.blank? ? "root" : @repository.identifier
@@ -140,18 +141,27 @@ class ScmExtensionsController < ApplicationController
     @entry = @repository.entry(@path, @rev)
     (show_error_not_found; return) unless @entry
 
-    # If the entry is a dir, show the browser
-    (show; return) if @entry.is_dir?
-
-    if @repository.is_a?(Repository::Filesystem)
-      data_to_send = File.new(File.join(@repository.scm.url, @path))
-      (show_error_not_found; return) unless File.exists?(data_to_send.path)
-      send_file File.expand_path(data_to_send.path), :filename => @path.split('/').last, :stream => true
+    if @entry.is_dir?
+      if @repository.scm.respond_to?('scm_extensions_download')
+        zip = SCMExtensionsZip::Zip.new
+        zip.add_folder(@repository, @path, @rev, @path)
+        send_file(zip.finish,
+          filename: "#{@entry.name ? @entry.name : @repository.identifier}-#{DateTime.current.strftime('%y%m%d%H%M%S')}.zip",
+          type: 'application/zip',
+          disposition: 'attachment')
+        zip.close if zip
+      end
     else
-      @content = @repository.cat(@path, @rev)
-      (show_error_not_found; return) unless @content
-      # Force the download
-      send_data @content, :filename => @path.split('/').last, :disposition => "inline", :type => Redmine::MimeType.of(@path.split('/').last)
+      if @repository.is_a?(Repository::Filesystem)
+        data_to_send = File.new(File.join(@repository.scm.url, @path))
+        (show_error_not_found; return) unless File.exists?(data_to_send.path)
+        send_file File.expand_path(data_to_send.path), :filename => @path.split('/').last, :stream => true
+      else
+        @content = @repository.cat(@path, @rev)
+        (show_error_not_found; return) unless @content
+        # Force the download
+        send_data @content, :filename => @path.split('/').last, :disposition => "inline", :type => Redmine::MimeType.of(@path.split('/').last)
+      end
     end
   end
 

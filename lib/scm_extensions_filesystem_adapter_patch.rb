@@ -166,6 +166,9 @@ module FilesystemAdapterMethodsScmExtensions
     return error ? 1 : 0
   end
 
+  def scm_extensions_download(repository, path, rev, identifier)
+  end
+
   def scm_extensions_invalid_path(path)
     return path =~ /\/\.\.\//
   end
