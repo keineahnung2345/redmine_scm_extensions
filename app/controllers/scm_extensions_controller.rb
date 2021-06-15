@@ -23,7 +23,8 @@ class ScmExtensionsController < ApplicationController
   layout 'base'
   before_action :find_project, :except => [:show, :download]
   before_action :find_repository, :only => [:show, :download]
-  before_action :authorize, :except => [:show, :download]
+  # TODO: enable autorize before upload_folder
+  before_action :authorize, :except => [:show, :download, :upload_folder]
 
   helper :attachments
   include AttachmentsHelper
@@ -55,6 +56,48 @@ class ScmExtensionsController < ApplicationController
             flash[:error] = l(:error_scm_extensions_upload_failed)
           when 2
             flash[:error] = l(:error_scm_extensions_no_path_head)
+          end
+        end
+
+      end
+      path = format_path(path)
+      if @repository.identifier.blank?
+        redirect_to :controller => 'repositories', :action => 'show', :id => @project, :path => path
+      else
+        redirect_to :controller => 'repositories', :action => 'show', :id => @project, :repository_id => @repository.identifier, :path => path
+      end
+      return
+    end
+  end
+
+  def upload_folder
+    path_root = @repository.identifier.blank? ? "root" : @repository.identifier
+    path = ""
+    path << path_root
+    path << "/#{params[:path]}" if (params[:path] && !params[:path].empty?)
+    @scm_extensions = ScmExtensionsWrite.new(:path => path, :project => @project, :repository => @repository)
+
+    if !request.get? && !request.xhr?
+      @scm_extensions.path = params[:scm_extensions][:path]
+      @scm_extensions.comments = params[:scm_extensions][:comments]
+      @scm_extensions.recipients = params[:watchers]
+      reg = Regexp.new("^#{path_root}")
+      path = params[:scm_extensions][:path].sub(reg,'').sub(/^\//,'')
+      attached = []
+      if params[:attachments] && params[:attachments].is_a?(ActionController::Parameters)
+        svnpath = path.empty? ? "/" : path
+        if @repository.scm.respond_to?('scm_extensions_upload_folder')
+          ret = @repository.scm.scm_extensions_upload_folder(@repository, svnpath, params[:attachments], params[:scm_extensions][:comments], nil)
+          case ret
+          when 0
+            flash[:notice] = l(:notice_scm_extensions_upload_success)
+            @scm_extensions.deliver(params[:attachments]) if @scm_extensions.recipients
+          when 1
+            flash[:error] = l(:error_scm_extensions_upload_failed)
+          when 2
+            flash[:error] = l(:error_scm_extensions_no_path_head)
+          when 3
+            flash[:error] = l(:error_scm_extensions_compressed_file_wrong_format)
           end
         end
 

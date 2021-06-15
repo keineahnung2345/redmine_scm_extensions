@@ -15,6 +15,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+require 'zip'
+
 module ScmExtensionsFilesystemAdapterPatch
   def self.included(base) # :nodoc:
     base.send(:include, FilesystemAdapterMethodsScmExtensions)
@@ -108,6 +110,95 @@ module FilesystemAdapterMethodsScmExtensions
     end
   end
 
+  # upload a compressed file and then extract it as a folder
+  def scm_extensions_upload_folder(repository, folder_path, attachments, comments, identifier)
+    return -1 if attachments.nil? || !attachments.is_a?(ActionController::Parameters)
+    return -1 if scm_extensions_invalid_path(folder_path)
+    metapath = (self.url =~ /\/files\/$/ && File.exist?(self.url.sub(/\/files\//, "/attributes")))
+
+    rev = identifier ? "@{identifier}" : ""
+    fullpath = File.join(repository.scm.url, folder_path)
+    if File.exist?(fullpath) && File.directory?(fullpath)
+      error = false
+
+      if repository.supports_all_revisions?
+        rev = -1
+        rev = repository.latest_changeset.revision.to_i if repository.latest_changeset
+        rev = rev + 1
+        changeset = Changeset.create(:repository => repository,
+                                                 :revision => rev,
+                                                 :committer => User.current.login,
+                                                 :committed_on => Time.now,
+                                                 :comments => comments)
+
+      end
+      attachments.require(attachments.keys).each do |attachment|
+        ajaxuploaded = true #attachment.has_key?("authenticity_token")
+
+        if ajaxuploaded
+          filename = attachment['filename']
+          tmp_att = Attachment.find_by(filename: filename)
+          file = tmp_att.diskfile
+        else
+          file = attachment['file']
+          next unless file && file.size > 0 && !error
+          filename = File.basename(file.original_filename)
+          next if scm_extensions_invalid_path(filename)
+        end
+
+        # TODO: do the check before doing anything
+        if filename.last(4) == ".zip"
+          foldername = filename[0...filename.size-4]
+        else
+          Rails.logger.info "can only handle zip file"
+          error = true
+          # TODO: set error code
+          break
+        end
+
+        begin
+          if repository.supports_all_revisions?
+            action = "A"
+            action = "M" if Dir.exists?(File.join(repository.scm.url, folder_path, foldername))
+            Change.create( :changeset => changeset, :action => action, :path => File.join("/", folder_path, foldername))
+          end
+          outfolder = File.join(repository.scm.url, folder_path)
+          if ajaxuploaded
+            if Dir.exist?(outfolder)
+              FileUtils.rm_rf(outfolder)
+            end
+            extract_zip(file, outfolder)
+            tmp_att.destroy
+            # make sure "file" is a zip file,
+            # unzip it
+
+            # move the directory to "folder_path"
+          end
+          # TODO: support metapath
+          if false #if metapath
+            metapathtarget = File.join(repository.scm.url, folder_path, filename).sub(/\/files\//, "/attributes/")
+            FileUtils.mkdir_p File.dirname(metapathtarget)
+            File.open(metapathtarget, "w") do |f|
+              f.write("#{User.current}\n")
+              f.write("#{rev}\n")
+            end
+          end
+
+        rescue
+          error = true
+        end
+      end
+
+      if error
+        return 1
+      else
+        return 0
+      end
+    else
+      return 2
+    end
+  end
+
   def scm_extensions_delete(repository, path, comments, identifier)
     return -1 if path.nil? || path.empty?
     return -1 if scm_extensions_invalid_path(path)
@@ -171,6 +262,20 @@ module FilesystemAdapterMethodsScmExtensions
 
   def scm_extensions_invalid_path(path)
     return path =~ /\/\.\.\//
+  end
+
+  private
+
+  def extract_zip(file, destination)
+    FileUtils.mkdir_p(destination)
+ 
+    Zip::File.open(file) do |zip_file|
+      zip_file.each do |f|
+        fpath = File.join(destination, f.name)
+        Rails.logger.info "file in zip: #{fpath}"
+        zip_file.extract(f, fpath) unless File.exist?(fpath)
+      end
+    end
   end
 
 end

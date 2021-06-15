@@ -38,6 +38,10 @@ class ScmExtensionsRepositoryViewHook < Redmine::Hook::ViewListener
       output << "<a class='icon icon-add' href='#{url}'>#{l(:label_scm_extensions_upload)}</a>" if @repository.scm.respond_to?('scm_extensions_upload')
       #output << link_to(l(:label_scm_extensions_upload), {:controller => 'scm_extensions', :action => 'upload', :id => @project, :repository_id => @repository.identifier, :path => @path, :only_path => true}, :class => 'icon icon-add') if @repository.scm.respond_to?('scm_extensions_upload')
       output << "&nbsp;&nbsp;"
+      url = suburi(url_for(:controller => 'scm_extensions', :action => 'upload_folder', :id => @project, :repository_id => @repository.identifier, :path => @path, :only_path => true))
+      output << "<a class='icon icon-add' href='#{url}'>#{l(:label_scm_extensions_upload_folder)}</a>" if @repository.scm.respond_to?('scm_extensions_upload_folder')
+      #output << link_to(l(:label_scm_extensions_upload), {:controller => 'scm_extensions', :action => 'upload', :id => @project, :repository_id => @repository.identifier, :path => @path, :only_path => true}, :class => 'icon icon-add') if @repository.scm.respond_to?('scm_extensions_upload')
+      output << "&nbsp;&nbsp;"
       #output << link_to(l(:label_scm_extensions_new_folder), {:controller => 'scm_extensions', :action => 'mkdir', :id => @project, :repository_id => @repository.identifier, :path => @path, :only_path => true}, :class => 'icon icon-add') if @repository.scm.respond_to?('scm_extensions_mkdir')
       url = suburi(url_for(:controller => 'scm_extensions', :action => 'mkdir', :id => @project, :repository_id => @repository.identifier, :path => @path, :only_path => true))
       output << "<a class='icon icon-add' href='#{url}'>#{l(:label_scm_extensions_new_folder)}</a>" if @repository.scm.respond_to?('scm_extensions_mkdir')
