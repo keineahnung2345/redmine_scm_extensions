@@ -22,4 +22,5 @@
 
 source 'https://rubygems.org' do
   gem 'zip-zip'
+  gem 'ffi-libarchive'
 end

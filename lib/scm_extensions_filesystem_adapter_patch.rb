@@ -147,8 +147,11 @@ module FilesystemAdapterMethodsScmExtensions
         end
 
         # TODO: do the check before doing anything
-        if filename.last(4) == ".zip"
-          foldername = filename[0...filename.size-4]
+        # TODO: rar Archive::Error (Seek failed)
+        if [".zip", ".rar", ".7z"].include?(File.extname(filename.downcase))
+          foldername = File.basename(filename, File.extname(filename))
+        elsif filename.downcase.ends_with?(".tar.gz")
+          foldername = filename[0...filename.size-".tar.gz".size]
         else
           Rails.logger.info "can only handle zip file"
           error = true
@@ -164,10 +167,13 @@ module FilesystemAdapterMethodsScmExtensions
           end
           outfolder = File.join(repository.scm.url, folder_path)
           if ajaxuploaded
-            if Dir.exist?(outfolder)
-              FileUtils.rm_rf(outfolder)
+            if Dir.exist?(File.join(outfolder, foldername))
+              # TODO: add confirmation
+              FileUtils.rm_rf(File.join(outfolder, foldername))
             end
-            extract_zip(file, outfolder)
+            # TODO: ask if the user want to keep the name of the compressed file and make it the outermost folder
+            #extract_zip(file, outfolder)
+            extract_compressed_file(file, outfolder)
             tmp_att.destroy
             # make sure "file" is a zip file,
             # unzip it
@@ -272,10 +278,21 @@ module FilesystemAdapterMethodsScmExtensions
     Zip::File.open(file) do |zip_file|
       zip_file.each do |f|
         fpath = File.join(destination, f.name)
-        Rails.logger.info "file in zip: #{fpath}"
         zip_file.extract(f, fpath) unless File.exist?(fpath)
       end
     end
+  end
+
+  def extract_compressed_file(fname, destination)
+    FileUtils.mkdir_p(destination)
+
+    flags = Archive::EXTRACT_PERM
+    reader = Archive::Reader.open_filename(fname)
+
+    reader.each_entry do |entry|
+      reader.extract(entry, flags.to_i, destination: destination)
+    end
+    reader.close
   end
 
 end
