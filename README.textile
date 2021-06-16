@@ -13,7 +13,13 @@ To commit changes in Subversion, the plugin opens the repository with the file p
 
 h1. Setup
 
-h3. 1. Install plugin into vendor/plugins
+h3. 1. Install requirements
+
+"zip-zip":https://rubygems.org/gems/zip-zip/versions/0.3
+
+"ffi-libarchive":https://github.com/chef/ffi-libarchive
+
+h3. 2. Install plugin into vendor/plugins
 
 Install redmine_scm_extensions with:
 * <tt>cd [redmine-install-dir]/plugins</tt>
@@ -21,10 +27,10 @@ Install redmine_scm_extensions with:
 
 No DB migration is required...
 
-h3. 2. Restart your web server
+h3. 3. Restart your web server
 
 
-h3. 3. Configure REDMINE with your web browser
+h3. 4. Configure REDMINE with your web browser
 
 If everything is OK, you should see SCM extensions in the plugin list (Administration -> Plugins)
 
