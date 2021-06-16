@@ -23,8 +23,7 @@ class ScmExtensionsController < ApplicationController
   layout 'base'
   before_action :find_project, :except => [:show, :download]
   before_action :find_repository, :only => [:show, :download]
-  # TODO: enable autorize before upload_folder
-  before_action :authorize, :except => [:show, :download, :upload_folder]
+  before_action :authorize, :except => [:show, :download]
 
   helper :attachments
   include AttachmentsHelper
