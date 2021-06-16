@@ -96,7 +96,7 @@ class ScmExtensionsController < ApplicationController
           when 2
             flash[:error] = l(:error_scm_extensions_no_path_head)
           when 3
-            flash[:error] = l(:error_scm_extensions_compressed_file_wrong_format)
+            flash[:error] = l(:error_scm_extensions_compressed_file_unsupported_format)
           end
         end
 

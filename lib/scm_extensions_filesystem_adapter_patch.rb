@@ -132,11 +132,15 @@ module FilesystemAdapterMethodsScmExtensions
                                                  :comments => comments)
 
       end
+
+      supported_compressed_type = %w(.zip .rar .7z .tar .tar.gz)
+
       attachments.require(attachments.keys).each do |attachment|
         ajaxuploaded = true #attachment.has_key?("authenticity_token")
 
         if ajaxuploaded
           filename = attachment['filename']
+          # TODO: if there are multiple attachments with same name, choose the last one
           tmp_att = Attachment.find_by(filename: filename)
           file = tmp_att.diskfile
         else
@@ -146,18 +150,11 @@ module FilesystemAdapterMethodsScmExtensions
           next if scm_extensions_invalid_path(filename)
         end
 
-        # TODO: do the check before doing anything
-        # TODO: rar Archive::Error (Seek failed)
-        if [".zip", ".rar", ".7z"].include?(File.extname(filename.downcase))
-          foldername = File.basename(filename, File.extname(filename))
-        elsif filename.downcase.ends_with?(".tar.gz")
-          foldername = filename[0...filename.size-".tar.gz".size]
-        else
-          Rails.logger.info "can only handle zip file"
-          error = true
-          # TODO: set error code
-          break
+        unless filename.downcase.ends_with?(*supported_compressed_type)
+          return 3
         end
+
+        foldername = filename.gsub(/.zip|.rar|.7z|.tar|.tar.gz$/, "")
 
         begin
           if repository.supports_all_revisions?
