@@ -283,16 +283,28 @@ module FilesystemAdapterMethodsScmExtensions
     end
   end
 
+  def extract_rar(fname, destination)
+    # FIXME: cannot recover docx file
+    FileUtils.mkdir_p(destination)
+
+    cmd = ["unrar x -o+", fname, destination].join(" ")
+    system(cmd)
+  end
+
   def extract_compressed_file(fname, destination)
     FileUtils.mkdir_p(destination)
 
-    flags = Archive::EXTRACT_PERM
-    reader = Archive::Reader.open_filename(fname)
+    if fname.downcase.ends_with?(".rar")
+      extract_rar(fname, destination)
+    else
+      flags = Archive::EXTRACT_PERM
+      reader = Archive::Reader.open_filename(fname)
 
-    reader.each_entry do |entry|
-      reader.extract(entry, flags.to_i, destination: destination)
+      reader.each_entry do |entry|
+        reader.extract(entry, flags.to_i, destination: destination)
+      end
+      reader.close
     end
-    reader.close
   end
 
 end
