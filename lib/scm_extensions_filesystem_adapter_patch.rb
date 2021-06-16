@@ -56,7 +56,7 @@ module FilesystemAdapterMethodsScmExtensions
 
         if ajaxuploaded
           filename = attachment['filename']
-          tmp_att = Attachment.find_by(filename: filename)
+          tmp_att = Attachment.where(filename: filename).last
           file = tmp_att.diskfile
         else
           file = attachment['file']
@@ -140,8 +140,7 @@ module FilesystemAdapterMethodsScmExtensions
 
         if ajaxuploaded
           filename = attachment['filename']
-          # TODO: if there are multiple attachments with same name, choose the last one
-          tmp_att = Attachment.find_by(filename: filename)
+          tmp_att = Attachment.where(filename: filename).last
           file = tmp_att.diskfile
         else
           file = attachment['file']
