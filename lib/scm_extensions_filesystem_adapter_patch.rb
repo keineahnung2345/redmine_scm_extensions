@@ -171,10 +171,6 @@ module FilesystemAdapterMethodsScmExtensions
             #extract_zip(file, outfolder)
             extract_compressed_file(file, outfolder)
             tmp_att.destroy
-            # make sure "file" is a zip file,
-            # unzip it
-
-            # move the directory to "folder_path"
           end
           # TODO: support metapath
           if false #if metapath
