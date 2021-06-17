@@ -4,6 +4,7 @@ en:
   permission_scm_write_access: "Update repository"
   label_scm_extensions_upload: "Upload files"
   label_scm_extensions_upload_folder: "Upload folders"
+  label_scm_extensions_upload_folder_keep_outermost: "Create a folder with the same name as the compress file and extract into it. Ex: if abc.zip is uploaded, create a folder named abc and extract into the folder."
   scm_extensions_compressed_file_format_info: "Supported compressed file format: zip"
   notice_scm_extensions_upload_success: "Uploaded successfully"
   error_scm_extensions_upload_failed: "Error. Update canceled"

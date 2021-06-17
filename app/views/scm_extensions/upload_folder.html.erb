@@ -42,7 +42,9 @@ function addFileUploadField() {
 <input type="button" value="<%= l(:label_none) %>" onclick="SetAllCheckBoxes(false)" />
 </p>
 <hr>
-<p><strong><label><%=l(:label_attachment_plural)%></label></strong><br /><%= render :partial => 'scm_extensions/file' %></p>
+<p><strong><label><%=l(:label_attachment_plural)%></label></strong><br /><%= render :partial => 'scm_extensions/file' %>
+<p><%= check_box_tag 'keep_outermost', true, false %> <%=l(:label_scm_extensions_upload_folder_keep_outermost)%></p>
+</p>
 </div>
 <p><%= submit_tag l(:button_save) %>
 </p>

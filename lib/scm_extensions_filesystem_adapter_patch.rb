@@ -111,7 +111,7 @@ module FilesystemAdapterMethodsScmExtensions
   end
 
   # upload a compressed file and then extract it as a folder
-  def scm_extensions_upload_folder(repository, folder_path, attachments, comments, identifier)
+  def scm_extensions_upload_folder(repository, folder_path, attachments, comments, identifier, keep_outermost)
     return -1 if attachments.nil? || !attachments.is_a?(ActionController::Parameters)
     return -1 if scm_extensions_invalid_path(folder_path)
     metapath = (self.url =~ /\/files\/$/ && File.exist?(self.url.sub(/\/files\//, "/attributes")))
@@ -153,21 +153,19 @@ module FilesystemAdapterMethodsScmExtensions
           return 3
         end
 
-        foldername = filename.gsub(/.zip|.rar|.7z|.tar|.tar.gz$/, "")
+        # .tar.gz should be before .tar, o.w. only .tar will be removed!
+        foldername = filename.gsub(/.zip|.rar|.7z|.tar.gz|.tar$/, "")
 
         begin
+          outfolder = File.join(repository.scm.url, folder_path)
+          outfolder = File.join(outfolder, foldername) if keep_outermost
           if repository.supports_all_revisions?
             action = "A"
-            action = "M" if Dir.exists?(File.join(repository.scm.url, folder_path, foldername))
-            Change.create( :changeset => changeset, :action => action, :path => File.join("/", folder_path, foldername))
+            # TODO: here we only record the change of a folder, it's better to record the change of every of its files
+            action = "M" if Dir.exists?(outfolder)
+            Change.create( :changeset => changeset, :action => action, :path => File.join(outfolder))
           end
-          outfolder = File.join(repository.scm.url, folder_path)
           if ajaxuploaded
-            if Dir.exist?(File.join(outfolder, foldername))
-              # TODO: add confirmation
-              FileUtils.rm_rf(File.join(outfolder, foldername))
-            end
-            # TODO: ask if the user want to keep the name of the compressed file and make it the outermost folder
             #extract_zip(file, outfolder)
             extract_compressed_file(file, outfolder)
             tmp_att.destroy
@@ -181,7 +179,6 @@ module FilesystemAdapterMethodsScmExtensions
               f.write("#{rev}\n")
             end
           end
-
         rescue
           error = true
         end
@@ -293,6 +290,7 @@ module FilesystemAdapterMethodsScmExtensions
       reader = Archive::Reader.open_filename(fname)
 
       reader.each_entry do |entry|
+        # TODO: decide to overwrite or discard when there is a file with the same name
         reader.extract(entry, flags.to_i, destination: destination)
       end
       reader.close
