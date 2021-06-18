@@ -52,8 +52,25 @@ class ScmExtensionsRepositoryViewHook < Redmine::Hook::ViewListener
         output << "<a class='icon icon-del' data-confirm='#{l(:text_are_you_sure)}' href='#{url}'>#{l(:label_scm_extensions_delete_folder)}</a>" if @repository.scm.respond_to?('scm_extensions_delete')
         output << "&nbsp;&nbsp;"
       end
-      url = suburi(url_for(:controller => 'scm_extensions', :action => 'download', :id => @project, :repository_id => @repository.identifier, :path => @path, :only_path => true))
-      output << "<a class='icon icon-download' href='#{url}'>#{l(:label_scm_extensions_download_folder)}</a>"
+      # calculate folder size: https://stackoverflow.com/questions/55719522/how-to-get-the-total-size-of-files-in-a-directory-in-ruby
+      full_path = File.join(@repository.url, @path) + "/**/*"
+      total_size = Dir[full_path].select { |f| File.file?(f) }.sum { |f| File.stat(f).blocks * 512 }
+      # TODO: make it configurable
+      # 10485760: 10MB, 10737418240: 10GB
+      disabled = (total_size > 10485760)
+
+      # url = suburi(url_for(:controller => 'scm_extensions', :action => 'download', :id => @project, :repository_id => @repository.identifier, :path => @path, :only_path => true))
+      # output << "<a class='icon icon-download' href='#{url}'>#{l(:label_scm_extensions_download_folder)}</a>"
+
+      output << "<div style='display: inline-block'>"
+      if disabled
+        output << "<div title='#{l(:label_scm_extensions_downloadable_info)}' rel='tooltip' style='display: inline-block'>"
+      end
+      # params: https://stackoverflow.com/questions/4886963/how-to-add-additional-params-to-a-button-to-form
+      # :method => get: https://stackoverflow.com/questions/8684467/button-to-with-get-method-option-in-rails/21011565
+      # use 'get' rather than 'post' to avoid "Can't verify CSRF token authenticity."
+      output << button_to(l(:label_scm_extensions_download_folder), {:controller => 'scm_extensions', :action => 'download', :id => @project}, :disabled => disabled, :method => 'get', :params => {:repository_id => @repository.identifier, :path => @path})
+      output << "</div>"
     else
       #output << link_to(l(:label_scm_extensions_delete_file), {:controller => 'scm_extensions', :action => 'delete', :id => @project, :repository_id => @repository.identifier, :path => @path, :only_path => true},  :class => 'icon icon-del', :confirm => l(:text_are_you_sure)) if @repository.scm.respond_to?('scm_extensions_delete')
       url = suburi(url_for(:controller => 'scm_extensions', :action => 'delete', :id => @project, :repository_id => @repository.identifier, :path => @path, :only_path => true))

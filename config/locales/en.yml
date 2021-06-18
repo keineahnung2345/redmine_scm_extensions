@@ -31,3 +31,4 @@ en:
   label_scm_extensions_notify_by: "Mail from %{author}"
   label_scm_extensions_download: "Download"
   label_scm_extensions_download_folder: "Download this folder/directory"
+  label_scm_extensions_downloadable_info: "The folder/directory is too large. Please download its content one by one."

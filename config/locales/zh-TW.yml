@@ -31,3 +31,4 @@ zh-TW:
   label_scm_extensions_notify_by: "Mail from %{author}"
   label_scm_extensions_download: "下載"
   label_scm_extensions_download_folder: "下載本資料夾"
+  label_scm_extensions_downloadable_info: "本資料夾大小超過上限。請逐一下載其所包含的內容。"
