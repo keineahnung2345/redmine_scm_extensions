@@ -5,6 +5,7 @@
 # Copyright © 2011    Vít Jonáš <vit.jonas@gmail.com>
 # Copyright © 2012    Daniel Munn <dan.munn@munnster.co.uk>
 # Copyright © 2011-21 Karel Pičman <karel.picman@kontron.com>
+# Copyright © 2021    keineahnung2345 <mimifasosofamire1123@gmail.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
