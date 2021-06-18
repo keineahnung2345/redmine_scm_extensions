@@ -1,7 +1,7 @@
 # Introduction
 
 Main features of the plugin:
-- Add 3 actions in repository views: "upload files", "new folder" and "delete file/folder". Right now, only subversion and filesystem SCM are supported...
+- Add 5 actions in repository views: **upload files**, **upload folders via compressed files**, **new folder**, **delete file/folder** and **download folders**. Right now, only ~~subversion(not fixed for Redmine 4.1 yet)~~ and filesystem SCM are supported...
 - Add a new macro _scm_show_ to include repository inside a wiki page 
 
 Development was done using REDMINE trunk r9901 (=> 2.0.3 +) and any release after 2.0.3 should work
@@ -57,3 +57,14 @@ A new permission is now available (SCM extensions -> Update repository) and you 
 - New: Members can be selected in upload form and the plugin will notify them by email if upload complete successfully
 
 0.0.1: Initial release
+
+# TODO
+
+- [x] Update to Redmine 4.1 for filesystem SCM
+- [ ] Update to Redmine 4.1 for subversion SCM
+- [ ] Add git SCM support(?)
+- [x] Upload folders via compressed files
+- [ ] Upload folders directly(?)
+- [x] Download folders
+- [ ] Rename files/folders
+- [ ] Move files/folders
