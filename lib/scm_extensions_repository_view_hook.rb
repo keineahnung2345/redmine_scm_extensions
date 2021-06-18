@@ -57,8 +57,8 @@ class ScmExtensionsRepositoryViewHook < Redmine::Hook::ViewListener
       full_path = File.join(@repository.url, @path) + "/**/*"
       total_size = Dir[full_path].select { |f| File.file?(f) }.sum { |f| File.stat(f).blocks * 512 }
       # TODO: make it configurable
-      # 10485760: 10MB, 10737418240: 10GB
-      disabled = (total_size > 10485760)
+      # 104857600: 100MB, 10737418240: 10GB
+      disabled = (total_size > 104857600)
 
       # url = suburi(url_for(:controller => 'scm_extensions', :action => 'download', :id => @project, :repository_id => @repository.identifier, :path => @path, :only_path => true))
       # output << "<a class='icon icon-download' href='#{url}'>#{l(:label_scm_extensions_download_folder)}</a>"
