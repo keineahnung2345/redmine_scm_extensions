@@ -53,7 +53,7 @@ class ScmExtensionsRepositoryViewHook < Redmine::Hook::ViewListener
         output << "&nbsp;&nbsp;"
       end
       url = suburi(url_for(:controller => 'scm_extensions', :action => 'download', :id => @project, :repository_id => @repository.identifier, :path => @path, :only_path => true))
-      output << "<a class='icon icon-download' href='#{url}'>#{l(:label_scm_extensions_download)}</a>"
+      output << "<a class='icon icon-download' href='#{url}'>#{l(:label_scm_extensions_download_folder)}</a>"
     else
       #output << link_to(l(:label_scm_extensions_delete_file), {:controller => 'scm_extensions', :action => 'delete', :id => @project, :repository_id => @repository.identifier, :path => @path, :only_path => true},  :class => 'icon icon-del', :confirm => l(:text_are_you_sure)) if @repository.scm.respond_to?('scm_extensions_delete')
       url = suburi(url_for(:controller => 'scm_extensions', :action => 'delete', :id => @project, :repository_id => @repository.identifier, :path => @path, :only_path => true))

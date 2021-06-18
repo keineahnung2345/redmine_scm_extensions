@@ -16,7 +16,7 @@ en:
   notice_scm_extensions_mkdir_success: "Folder/directory created successfully"
   error_scm_extensions_mkdir_failed: "Error. Folder/directory not created"
   label_scm_extensions_new_folder: "New folder/directory"
-  label_scm_extensions_delete_folder: "Delete folder/directory"
+  label_scm_extensions_delete_folder: "Delete this folder/directory"
   label_scm_extensions_delete_file: "Delete file"
   label_scm_extensions_folder_name: "Name of the new folder/directory"
 
@@ -30,3 +30,4 @@ en:
   label_scm_extensions_notify_body: "Following files can be found in folder "
   label_scm_extensions_notify_by: "Mail from %{author}"
   label_scm_extensions_download: "Download"
+  label_scm_extensions_download_folder: "Download this folder/directory"
