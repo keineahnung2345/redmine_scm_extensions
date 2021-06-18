@@ -86,7 +86,7 @@ class ScmExtensionsController < ApplicationController
       if params[:attachments] && params[:attachments].is_a?(ActionController::Parameters)
         svnpath = path.empty? ? "/" : path
         if @repository.scm.respond_to?('scm_extensions_upload_folder')
-          ret = @repository.scm.scm_extensions_upload_folder(@repository, svnpath, params[:attachments], params[:scm_extensions][:comments], nil, params[:keep_outermost])
+          ret = @repository.scm.scm_extensions_upload_folder(@repository, svnpath, params[:attachments], params[:scm_extensions][:comments], nil, params[:keep_outermost], params[:overwrite])
           case ret
           when 0
             flash[:notice] = l(:notice_scm_extensions_upload_success)

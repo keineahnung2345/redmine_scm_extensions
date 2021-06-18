@@ -111,7 +111,7 @@ module FilesystemAdapterMethodsScmExtensions
   end
 
   # upload a compressed file and then extract it as a folder
-  def scm_extensions_upload_folder(repository, folder_path, attachments, comments, identifier, keep_outermost)
+  def scm_extensions_upload_folder(repository, folder_path, attachments, comments, identifier, keep_outermost, overwrite)
     return -1 if attachments.nil? || !attachments.is_a?(ActionController::Parameters)
     return -1 if scm_extensions_invalid_path(folder_path)
     metapath = (self.url =~ /\/files\/$/ && File.exist?(self.url.sub(/\/files\//, "/attributes")))
@@ -167,7 +167,7 @@ module FilesystemAdapterMethodsScmExtensions
           end
           if ajaxuploaded
             #extract_zip(file, outfolder)
-            extract_compressed_file(file, outfolder)
+            extract_compressed_file(file, outfolder, overwrite)
             tmp_att.destroy
           end
           # TODO: support metapath
@@ -280,17 +280,17 @@ module FilesystemAdapterMethodsScmExtensions
     system(cmd)
   end
 
-  def extract_compressed_file(fname, destination)
+  def extract_compressed_file(fname, destination, overwrite)
     FileUtils.mkdir_p(destination)
 
     if fname.downcase.ends_with?(".rar")
       extract_rar(fname, destination)
     else
       flags = Archive::EXTRACT_PERM
+      flags |= Archive::EXTRACT_NO_OVERWRITE unless overwrite
       reader = Archive::Reader.open_filename(fname)
 
       reader.each_entry do |entry|
-        # TODO: decide to overwrite or discard when there is a file with the same name
         reader.extract(entry, flags.to_i, destination: destination)
       end
       reader.close
