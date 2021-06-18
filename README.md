@@ -1,5 +1,7 @@
 # Introduction
 
+This repository is an unofficial successor of [amartel/redmine_scm_extensions](https://github.com/amartel/redmine_scm_extensions), it works on Redmine 4.1.
+
 Main features of the plugin:
 - Add 5 actions in repository views: **upload files**, **upload folders via compressed files**, **new folder**, **delete file/folder** and **download folders**. Right now, only ~~subversion(not fixed for Redmine 4.1 yet)~~ and filesystem SCM are supported...
 - Add a new macro _scm_show_ to include repository inside a wiki page 
