@@ -256,6 +256,33 @@ module FilesystemAdapterMethodsScmExtensions
   def scm_extensions_download(repository, path, rev, identifier)
   end
 
+  def scm_extensions_rename(repository, path, new_name, comments, identifier)
+    return -1 if path.nil? || path.empty?
+    return -1 if scm_extensions_invalid_path(path)
+
+    error = false
+    begin
+      old_full_path = File.join(repository.scm.url, path)
+      new_full_path = File.join(repository.scm.url, File.dirname(path), new_name)
+      if repository.supports_all_revisions?
+        rev = -1
+        rev = repository.latest_changeset.revision.to_i if repository.latest_changeset
+        rev = rev + 1
+        changeset = Changeset.create(:repository => repository,
+                                                 :revision => rev,
+                                                 :committer => User.current.login,
+                                                 :committed_on => Time.now,
+                                                 :comments => "rename #{old_full_path} to #{new_full_path}")
+        Change.create( :changeset => changeset, :action => 'M', :path => old_full_path)
+      end
+      File.rename(old_full_path, new_full_path)
+    rescue
+      error = true
+    end
+
+    return error ? 1 : 0
+  end
+
   def scm_extensions_invalid_path(path)
     return path =~ /\/\.\.\//
   end

@@ -30,7 +30,7 @@ Redmine::Plugin.register :redmine_scm_extensions do
 
   
   project_module :scm_extensions do
-    permission :scm_write_access, {:scm_extensions => [:upload, :upload_folder, :mkdir, :delete, :notify]}
+    permission :scm_write_access, {:scm_extensions => [:upload, :upload_folder, :mkdir, :delete, :rename, :notify]}
   end
 
 end

@@ -47,9 +47,9 @@ class ScmExtensionsRepositoryViewHook < Redmine::Hook::ViewListener
       url = suburi(url_for(:controller => 'scm_extensions', :action => 'mkdir', :id => @project, :repository_id => @repository.identifier, :path => @path, :only_path => true))
       output << "<a class='icon icon-add' href='#{url}'>#{l(:label_scm_extensions_new_folder)}</a>" if @repository.scm.respond_to?('scm_extensions_mkdir')
       output << "&nbsp;&nbsp;"
-      #output << link_to(l(:label_scm_extensions_delete_folder), {:controller => 'scm_extensions', :action => 'delete', :id => @project, :repository_id => @repository.identifier, :path => @path, :only_path => true},  :class => 'icon icon-del', :confirm => l(:text_are_you_sure)) if @repository.scm.respond_to?('scm_extensions_delete')
-      url = suburi(url_for(:controller => 'scm_extensions', :action => 'delete', :id => @project, :repository_id => @repository.identifier, :path => @path, :only_path => true))
       if @path && !@path.empty?
+        #output << link_to(l(:label_scm_extensions_delete_folder), {:controller => 'scm_extensions', :action => 'delete', :id => @project, :repository_id => @repository.identifier, :path => @path, :only_path => true},  :class => 'icon icon-del', :confirm => l(:text_are_you_sure)) if @repository.scm.respond_to?('scm_extensions_delete')
+        url = suburi(url_for(:controller => 'scm_extensions', :action => 'delete', :id => @project, :repository_id => @repository.identifier, :path => @path, :only_path => true))
         output << "<a class='icon icon-del' data-confirm='#{l(:text_are_you_sure)}' href='#{url}'>#{l(:label_scm_extensions_delete_folder)}</a>" if @repository.scm.respond_to?('scm_extensions_delete')
         output << "&nbsp;&nbsp;"
       end
@@ -71,11 +71,19 @@ class ScmExtensionsRepositoryViewHook < Redmine::Hook::ViewListener
       # :method => get: https://stackoverflow.com/questions/8684467/button-to-with-get-method-option-in-rails/21011565
       # use 'get' rather than 'post' to avoid "Can't verify CSRF token authenticity."
       output << button_to(l(:label_scm_extensions_download_folder), {:controller => 'scm_extensions', :action => 'download', :id => @project}, :disabled => disabled, :method => 'get', :params => {:repository_id => @repository.identifier, :path => @path})
+      if @path && !@path.empty?
+        output << "&nbsp;&nbsp;"
+        url = suburi(url_for(:controller => 'scm_extensions', :action => 'rename', :id => @project, :repository_id => @repository.identifier, :path => @path, :only_path => true))
+        output << "<a class='icon icon-edit' href='#{url}'>#{l(:label_scm_extensions_rename)}</a>" if @repository.scm.respond_to?('scm_extensions_rename')
+      end
       output << "</div>"
     else
       #output << link_to(l(:label_scm_extensions_delete_file), {:controller => 'scm_extensions', :action => 'delete', :id => @project, :repository_id => @repository.identifier, :path => @path, :only_path => true},  :class => 'icon icon-del', :confirm => l(:text_are_you_sure)) if @repository.scm.respond_to?('scm_extensions_delete')
       url = suburi(url_for(:controller => 'scm_extensions', :action => 'delete', :id => @project, :repository_id => @repository.identifier, :path => @path, :only_path => true))
       output << "<a class='icon icon-del' data-confirm='#{l(:text_are_you_sure)}' href='#{url}'>#{l(:label_scm_extensions_delete_file)}</a>" if @repository.scm.respond_to?('scm_extensions_delete')
+      output << "&nbsp;&nbsp;"
+      url = suburi(url_for(:controller => 'scm_extensions', :action => 'rename', :id => @project, :repository_id => @repository.identifier, :path => @path, :only_path => true))
+      output << "<a class='icon icon-edit' href='#{url}'>#{l(:label_scm_extensions_rename)}</a>" if @repository.scm.respond_to?('scm_extensions_rename')
     end
     output << "&nbsp;&nbsp;"
     url = suburi(url_for(:controller => 'scm_extensions', :action => 'notify', :id => @project, :repository_id => @repository.identifier, :path => @path, :only_path => true))

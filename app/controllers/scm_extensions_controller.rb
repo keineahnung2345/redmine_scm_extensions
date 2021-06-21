@@ -261,6 +261,41 @@ class ScmExtensionsController < ApplicationController
     end
   end
 
+  def rename
+    path_root = @repository.identifier.blank? ? "root" : @repository.identifier
+    path = ""
+    path << path_root
+    path << "/#{params[:path]}" if (params[:path] && !params[:path].empty?)
+    @scm_extensions = ScmExtensionsWrite.new(:path => path, :project => @project)
+
+    if !request.get? && !request.xhr?
+      path = params[:scm_extensions][:path].sub(/^#{path_root}/,'').sub(/^\//,'')
+      new_name = params[:scm_extensions][:new_name]
+      svnpath = path.empty? ? "/" : path
+
+      if @repository.scm.respond_to?('scm_extensions_rename')
+        ret = @repository.scm.scm_extensions_rename(@repository, svnpath, params[:scm_extensions][:new_name], params[:scm_extensions][:comments], nil)
+        case ret
+        when 0
+          flash[:notice] = l(:notice_scm_extensions_rename_success)
+          path = File.join(File.dirname(svnpath), new_name)
+        when 1
+          flash[:error] = l(:error_scm_extensions_rename_failed)
+        end
+      end
+      @entry = @repository.entry(path, nil)
+      isdir = (@entry.kind == "dir")
+      action = (isdir ? 'show' : 'entry')
+      path = format_path(path)
+      if @repository.identifier.blank?
+        redirect_to :controller => 'repositories', :action => action, :id => @project, :path => path
+      else
+        redirect_to :controller => 'repositories', :action => action, :id => @project, :repository_id => @repository.identifier, :path => path
+      end
+      return
+    end
+  end
+
   private
 
   def find_project

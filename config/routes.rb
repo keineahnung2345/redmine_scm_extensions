@@ -6,3 +6,5 @@ match 'projects/:id/scm_extensions/mkdir', :controller => 'scm_extensions', :act
 match 'projects/:id/scm_extensions/show', :controller => 'scm_extensions', :action => :show, :via => [:get, :post]
 match 'projects/:id/scm_extensions/download', :controller => 'scm_extensions', :action => :download, :via => [:get, :post]
 match 'projects/:id/scm_extensions/notify', :controller => 'scm_extensions', :action => :notify, :via => [:get, :post]
+match 'projects/:id/scm_extensions/rename', :controller => 'scm_extensions', :action => :rename, :via => [:get, :post]
+

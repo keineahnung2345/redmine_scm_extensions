@@ -15,9 +15,13 @@ en:
   notice_scm_extensions_delete_success: "Deleted successfully"
   notice_scm_extensions_mkdir_success: "Folder/directory created successfully"
   error_scm_extensions_mkdir_failed: "Error. Folder/directory not created"
+  notice_scm_extensions_rename_success: "File/folder/directory renamed successfully"
+  error_scm_extensions_rename_failed: "Error. File/folder/directory not renamed"
   label_scm_extensions_new_folder: "New folder/directory"
+  label_scm_extensions_new_name: "New name"
   label_scm_extensions_delete_folder: "Delete this folder/directory"
   label_scm_extensions_delete_file: "Delete file"
+  label_scm_extensions_rename: "Rename"
   label_scm_extensions_folder_name: "Name of the new folder/directory"
 
   label_scm_extensions_upload_subject: "%{value}: New files are available"
