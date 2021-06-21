@@ -5,6 +5,7 @@ class ScmExtensionsWrite
   attr_accessor :comments
   attr_accessor :new_folder
   attr_accessor :new_name
+  attr_accessor :destination
   attr_accessor :path
   attr_accessor :project
   attr_accessor :recipients
@@ -14,6 +15,7 @@ class ScmExtensionsWrite
     self.comments = options[:comments]
     self.new_folder = options[:new_folder]
     self.new_name = options[:new_name]
+    self.destination = options[:destination]
     self.path = options[:path]
     self.project = options[:project]
     self.repository = options[:repository]

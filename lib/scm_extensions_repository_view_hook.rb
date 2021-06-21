@@ -76,6 +76,11 @@ class ScmExtensionsRepositoryViewHook < Redmine::Hook::ViewListener
         url = suburi(url_for(:controller => 'scm_extensions', :action => 'rename', :id => @project, :repository_id => @repository.identifier, :path => @path, :only_path => true))
         output << "<a class='icon icon-edit' href='#{url}'>#{l(:label_scm_extensions_rename)}</a>" if @repository.scm.respond_to?('scm_extensions_rename')
       end
+      if @path && !@path.empty?
+        output << "&nbsp;&nbsp;"
+        url = suburi(url_for(:controller => 'scm_extensions', :action => 'move', :id => @project, :repository_id => @repository.identifier, :path => @path, :only_path => true))
+        output << "<a class='icon icon-move' href='#{url}'>#{l(:label_scm_extensions_move)}</a>" if @repository.scm.respond_to?('scm_extensions_move')
+      end
       output << "</div>"
     else
       #output << link_to(l(:label_scm_extensions_delete_file), {:controller => 'scm_extensions', :action => 'delete', :id => @project, :repository_id => @repository.identifier, :path => @path, :only_path => true},  :class => 'icon icon-del', :confirm => l(:text_are_you_sure)) if @repository.scm.respond_to?('scm_extensions_delete')
@@ -84,6 +89,8 @@ class ScmExtensionsRepositoryViewHook < Redmine::Hook::ViewListener
       output << "&nbsp;&nbsp;"
       url = suburi(url_for(:controller => 'scm_extensions', :action => 'rename', :id => @project, :repository_id => @repository.identifier, :path => @path, :only_path => true))
       output << "<a class='icon icon-edit' href='#{url}'>#{l(:label_scm_extensions_rename)}</a>" if @repository.scm.respond_to?('scm_extensions_rename')
+      url = suburi(url_for(:controller => 'scm_extensions', :action => 'move', :id => @project, :repository_id => @repository.identifier, :path => @path, :only_path => true))
+      output << "<a class='icon icon-move' href='#{url}'>#{l(:label_scm_extensions_move)}</a>" if @repository.scm.respond_to?('scm_extensions_move')
     end
     output << "&nbsp;&nbsp;"
     url = suburi(url_for(:controller => 'scm_extensions', :action => 'notify', :id => @project, :repository_id => @repository.identifier, :path => @path, :only_path => true))

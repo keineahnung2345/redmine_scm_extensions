@@ -17,6 +17,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 require 'zip'
+require 'fileutils'
 
 module ScmExtensionsFilesystemAdapterPatch
   def self.included(base) # :nodoc:
@@ -281,6 +282,38 @@ module FilesystemAdapterMethodsScmExtensions
     end
 
     return error ? 1 : 0
+  end
+
+  def scm_extensions_move(repository, path, destination, comments, identifier)
+    return -1 if path.nil? || path.empty?
+    return -1 if scm_extensions_invalid_path(path)
+
+    error_code = 0
+    begin
+      old_full_path = File.join(repository.scm.url, path)
+      # need to add the filename otherwise when the destination doesn't exist, it will do the "rename" operation
+      new_full_path = File.join(repository.scm.url, destination, File.basename(path))
+      if repository.supports_all_revisions?
+        rev = -1
+        rev = repository.latest_changeset.revision.to_i if repository.latest_changeset
+        rev = rev + 1
+        changeset = Changeset.create(:repository => repository,
+                                                 :revision => rev,
+                                                 :committer => User.current.login,
+                                                 :committed_on => Time.now,
+                                                 :comments => "move #{old_full_path} to #{new_full_path}")
+        Change.create( :changeset => changeset, :action => 'M', :path => old_full_path)
+      end
+      FileUtils.mv(old_full_path, new_full_path)
+    rescue ArgumentError
+      error_code = 2
+    rescue Errno::ENOENT
+      error_code = 3
+    rescue
+      error_code = 1
+    end
+
+    return error_code
   end
 
   def scm_extensions_invalid_path(path)
