@@ -56,9 +56,12 @@ class ScmExtensionsRepositoryViewHook < Redmine::Hook::ViewListener
       # calculate folder size: https://stackoverflow.com/questions/55719522/how-to-get-the-total-size-of-files-in-a-directory-in-ruby
       full_path = File.join(@repository.url, @path) + "/**/*"
       total_size = Dir[full_path].select { |f| File.file?(f) }.sum { |f| File.stat(f).blocks * 512 }
-      # TODO: make it configurable
-      # 104857600: 100MB, 10737418240: 10GB
-      disabled = (total_size > 104857600)
+      # unit: byte -> MB
+      total_size /= (1024.0 * 1024.0)
+      # FIXME: number_field_tag returns string?
+      Rails.logger.info "upper limit: #{Setting.plugin_redmine_scm_extensions['download_folder_upper_limit']}, class: #{Setting.plugin_redmine_scm_extensions['download_folder_upper_limit'].class}"
+      Rails.logger.info "#{total_size} bigger than #{Setting.plugin_redmine_scm_extensions['download_folder_upper_limit'].to_i}?"
+      disabled = (total_size > Setting.plugin_redmine_scm_extensions['download_folder_upper_limit'].to_i)
 
       # url = suburi(url_for(:controller => 'scm_extensions', :action => 'download', :id => @project, :repository_id => @repository.identifier, :path => @path, :only_path => true))
       # output << "<a class='icon icon-download' href='#{url}'>#{l(:label_scm_extensions_download_folder)}</a>"

@@ -1,0 +1,7 @@
+<p>
+  <%= content_tag :label, l(:label_download_folder_upper_limit) %>
+  <%= number_field_tag 'settings[download_folder_upper_limit]', @settings['download_folder_upper_limit'], :min => 1, :max => 104857600, class: "number", :autocomplete => false %> MB
+  <em class="info">
+    <%= l(:label_default) %>: 100MB
+  </em>
+</p>

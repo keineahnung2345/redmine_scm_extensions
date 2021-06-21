@@ -33,4 +33,9 @@ Redmine::Plugin.register :redmine_scm_extensions do
     permission :scm_write_access, {:scm_extensions => [:upload, :upload_folder, :mkdir, :delete, :rename, :move, :notify]}
   end
 
+  settings partial: 'settings/redmine_scm_extensions',
+    default: {
+      'download_folder_upper_limit' => 100
+    }
+
 end
