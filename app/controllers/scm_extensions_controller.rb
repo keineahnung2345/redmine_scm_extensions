@@ -36,6 +36,7 @@ class ScmExtensionsController < ApplicationController
     path << path_root
     path << "/#{params[:path]}" if (params[:path] && !params[:path].empty?)
     @scm_extensions = ScmExtensionsWrite.new(:path => path, :project => @project, :repository => @repository)
+    @is_upload_folder = false
 
     if !request.get? && !request.xhr?
       @scm_extensions.path = params[:scm_extensions][:path]
@@ -76,6 +77,7 @@ class ScmExtensionsController < ApplicationController
     path << path_root
     path << "/#{params[:path]}" if (params[:path] && !params[:path].empty?)
     @scm_extensions = ScmExtensionsWrite.new(:path => path, :project => @project, :repository => @repository)
+    @is_upload_folder = true
 
     if !request.get? && !request.xhr?
       @scm_extensions.path = params[:scm_extensions][:path]
