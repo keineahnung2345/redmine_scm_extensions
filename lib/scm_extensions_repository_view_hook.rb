@@ -59,8 +59,6 @@ class ScmExtensionsRepositoryViewHook < Redmine::Hook::ViewListener
       # unit: byte -> MB
       total_size /= (1024.0 * 1024.0)
       # FIXME: number_field_tag returns string?
-      Rails.logger.info "upper limit: #{Setting.plugin_redmine_scm_extensions['download_folder_upper_limit']}, class: #{Setting.plugin_redmine_scm_extensions['download_folder_upper_limit'].class}"
-      Rails.logger.info "#{total_size} bigger than #{Setting.plugin_redmine_scm_extensions['download_folder_upper_limit'].to_i}?"
       disabled = (total_size > Setting.plugin_redmine_scm_extensions['download_folder_upper_limit'].to_i)
 
       # url = suburi(url_for(:controller => 'scm_extensions', :action => 'download', :id => @project, :repository_id => @repository.identifier, :path => @path, :only_path => true))
