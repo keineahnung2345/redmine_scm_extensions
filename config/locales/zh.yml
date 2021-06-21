@@ -41,4 +41,5 @@ zh:
   label_scm_extensions_notify_by: "Mail from %{author}"
   label_scm_extensions_download: "下载"
   label_scm_extensions_download_folder: "下载本文件夹/目录"
+  label_download_folder_upper_limit: "可下载文件夹/目录的大小上限"
   label_scm_extensions_downloadable_info: "本文件夹/目录大小超过上限。请逐一下载其所包含的內容。"
