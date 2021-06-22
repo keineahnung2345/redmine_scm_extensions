@@ -53,20 +53,23 @@ class ScmExtensionsRepositoryViewHook < Redmine::Hook::ViewListener
         output << "<a class='icon icon-del' data-confirm='#{l(:text_are_you_sure)}' href='#{url}'>#{l(:label_scm_extensions_delete_folder)}</a>" if @repository.scm.respond_to?('scm_extensions_delete')
         output << "&nbsp;&nbsp;"
       end
-      full_path = File.join(@repository.url, @path) + "/**/*"
-      # Setting.plugin_redmine_scm_extensions['download_folder_upper_limit'] unit: MB
-      # FIXME: number_field_tag returns string?
-      download_folder_upper_limit_byte = Setting.plugin_redmine_scm_extensions['download_folder_upper_limit'].to_i * 1024 * 1024
-      total_size = 0
-      disabled = false
-      for f in Dir[full_path]
-        if File.file?(f)
-          # calculate folder size: https://stackoverflow.com/questions/55719522/how-to-get-the-total-size-of-files-in-a-directory-in-ruby
-          # total_size += File.stat(f).blocks * 512
-          total_size += File.size(f)
-          if total_size > download_folder_upper_limit_byte
-            disabled = true
-            break
+      download_folder_upper_limit_mb = Setting.plugin_redmine_scm_extensions['download_folder_upper_limit'].to_i
+      disabled = ! `find #{File.join(@repository.url, @path)} -type f -size +#{download_folder_upper_limit_mb}M -print -quit`.empty?
+      unless disabled
+        full_path = File.join(@repository.url, @path) + "/**/*"
+        # Setting.plugin_redmine_scm_extensions['download_folder_upper_limit'] unit: MB
+        # FIXME: number_field_tag returns string?
+        download_folder_upper_limit_byte = download_folder_upper_limit_mb * 1024 * 1024
+        total_size = 0
+        for f in Dir[full_path]
+          if File.file?(f)
+            # calculate folder size: https://stackoverflow.com/questions/55719522/how-to-get-the-total-size-of-files-in-a-directory-in-ruby
+            # total_size += File.stat(f).blocks * 512
+            total_size += File.size(f)
+            if total_size > download_folder_upper_limit_byte
+              disabled = true
+              break
+            end
           end
         end
       end
