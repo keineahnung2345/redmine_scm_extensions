@@ -19,7 +19,7 @@ $LOAD_PATH.unshift "#{File.dirname(__FILE__)}/lib"
 require 'redmine'
 
 #Extend the ActionMailer to include plugin in its paths
-ActionMailer::Base.append_view_path(File.expand_path(File.dirname(__FILE__) + '/../app/views'))
+ActionMailer::Base.append_view_path(File.expand_path(File.dirname(__FILE__) + '/app/views'))
 
 Dir::foreach(File.join(File.dirname(__FILE__), 'lib')) do |file|
   next unless /\.rb$/ =~ file
