@@ -24,7 +24,7 @@
 require 'zip'
 require 'redmine/scm/adapters'
 
-module SCMExtensionsZip
+module ScmExtensionsZip
   class Zip
     attr_reader :files
 

@@ -28,7 +28,7 @@ class ScmExtensionsController < ApplicationController
 
   helper :attachments
   include AttachmentsHelper
-  include SCMExtensionsZip
+  include ScmExtensionsZip
 
   def upload
     path_root = @repository.identifier.blank? ? "root" : @repository.identifier
@@ -188,7 +188,7 @@ class ScmExtensionsController < ApplicationController
 
     if @entry.is_dir?
       if @repository.scm.respond_to?('scm_extensions_download')
-        zip = SCMExtensionsZip::Zip.new
+        zip = ScmExtensionsZip::Zip.new
         zip.add_folder(@repository, @path, @rev, @path)
         send_file(zip.finish,
           filename: "#{@entry.name ? @entry.name : @repository.identifier}-#{DateTime.current.strftime('%y%m%d%H%M%S')}.zip",

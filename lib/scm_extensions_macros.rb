@@ -17,7 +17,7 @@
 require 'redmine'
 require 'sort_helper'
 
-module SCMExtensionsProjectMacro
+module ScmExtensionsMacros
   Redmine::WikiFormatting::Macros.register do
     desc "Display repository files. Examples:\n\n" +
       " !{{scm_show}} -- Show all default repository folders/files\n" +
